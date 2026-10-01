@@ -101,7 +101,7 @@
 					<!-- Requirement 5 
 						5.1 Add action and method properties to the search_form.
 					-->
-					<form id="search_form">
+					<form id="search_form" action="search" method="post">
 					<label style="padding-left:10px;">Search</label>
 					<select id="search_select" name="search_select" style="margin-left:10px;">
 						<option value="Name">Name</option>
@@ -167,6 +167,15 @@
 								1. https://jinja.palletsprojects.com/en/3.0.x/templates/ 
                                 				2. https://developer.mozilla.org/en-US/docs/Web/HTML/Element/figcaption
 							-->
+
+							{% for photo in photo_list %}
+							<li>
+    							<figure>
+        								<img src="{{ url_for('static', filename='images/photos/' + photo.name) }}" height="60" width="60" data-toggle="modal" data-target="#imageModal" onclick="preview_photo('{{photo.name}}')">
+       									<figcaption>{{photo.name}}</figcaption>
+    							</figure>
+							</li>
+							{% endfor %}
 						</ol>
 					</div>
 				</div> <!-- row2 -->

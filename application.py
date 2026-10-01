@@ -67,6 +67,43 @@ class Photo:
 # 5.5 Set empty photo list and appropriate status message when rendering the photo-portal.html
 # Pass the username by extracting it from flask's session dictionary.
 
+@app.route("/search", methods=["POST"])
+def search_photos():
+    username = ""
+    if "username" in session:
+        username = session['username']
+
+    search_select = request.form["search_select"]
+    search_input = request.form["search_input"].strip()
+    app.logger.info("Search by %s: %s", search_select, search_input)
+
+    matches = []
+    for photo in photos:
+        if search_select == "Name" and search_input in photo.name:
+            matches.append(photo)
+        elif search_select == "Tags" and search_input in photo.tags:
+            matches.append(photo)
+        elif search_select == "Date" and search_input == photo.date_taken:
+            matches.append(photo)
+
+    if matches:
+        status = "Matching photos found"
+        photo_list = matches
+    else:
+        status = "No matching photos found"
+        photo_list = []
+
+    if username.endswith("@gmail.com"):
+        upload_form_display = "display:none;"
+    else:
+        upload_form_display = "display:block;"
+
+    return render_template("photo-portal.html",
+                           upload_form_display=upload_form_display,
+                           username=username,
+                           photo_upload_status=status,
+                           photo_list=photo_list)
+
 @app.route("/upload", methods=["POST"])
 def upload_photo():
     app.logger.info("Inside upload_photo")
@@ -96,7 +133,14 @@ def upload_photo():
     # Requirement 3
     # 3.1 - Set the status and pass that in to photo_upload_status parameter.
 
-    return render_template("photo-portal.html", username=username, photo_list=photos)
+    status = "Photo " + filename + " uploaded successfully."
+    upload_form_display = "display:block;"
+
+    return render_template("photo-portal.html",
+                           upload_form_display=upload_form_display,
+                           username=username,
+                           photo_upload_status=status,
+                           photo_list=photos)
 
 
 @app.route("/logout",methods=['POST'])
@@ -110,8 +154,10 @@ def logout():
     # Use the "user" variable above to determine which endpoint to redirect to
     # Use assumption 1 to determine whether the user is admin user or general user
 
-    return flask.redirect("/admin")
+    if user.endswith("@gmail.com"):
+        return flask.redirect("/")
 
+    return flask.redirect("/admin")
 
 @app.route("/adminlogin", methods=['POST'])
 def adminlogin():
@@ -135,10 +181,28 @@ def adminlogin():
     flask.session["username"] = user
 
     return render_template('photo-portal.html',
-    						upload_form_display=upload_form_display,
-    						username=user,
-    						photo_upload_status=status,
-    						photo_list=photos)
+                           upload_form_display=upload_form_display,
+                           username=user,
+                           photo_upload_status=status,
+                           photo_list=photos)
+
+@app.route("/userlogin", methods=['POST'])
+def userlogin():
+    email = ""
+    if 'email' in request.form:
+        email = request.form['email'].strip()
+        app.logger.info("User email:%s", email)
+
+    status = "TODO: Implement slide-show functionality"
+    upload_form_display = "display:none;"
+
+    flask.session["username"] = email
+
+    return render_template('photo-portal.html',
+                           upload_form_display=upload_form_display,
+                           username=email,
+                           photo_upload_status=status,
+                           photo_list=photos)
 
 
 # Requirement 1.2 and 1.3
@@ -159,7 +223,9 @@ def adminindex():
 # You need to add index.html - refer to adminindex.html
 # Add only one input box in index.html (see requirement 1.1 in assignment description)
 
-
+@app.route("/")
+def index():
+    return render_template('index.html')
 
 if __name__ == "__main__":
 
