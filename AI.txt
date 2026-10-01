@@ -1,1 +1,20 @@
-Claude (Opus 5.5): used for git/repo setup instructions only. No code generated.
+AI tools used
+Claude Opus 5.5
+Claude in Chrome extension (used to run browser tests against my app)
+
+How AI was used
+I used Claude for environment setup help (git, GitHub, opening the project in VS Code, running the Flask app), for guidance on where in the starter code each requirement should be implemented, and for debugging code I had written.
+
+Debugging fixes suggested by Claude
+1. In validate_data, changed my single empty-input alert so it shows "Name should not be empty" or "Tags should not be empty" depending on the selected search option.
+2. In search_photos, added a check on the logged in username so the upload form stays hidden for general users after a search.
+3. In logout, suggested using flask.session.get to avoid a KeyError after a server restart.
+4. Identified that the starter code's adminlogin route had been accidentally removed from application.py, which caused a 404 on admin login, and I restored it from the starter code.
+
+Prompts
+1. What are the error messages from the spec? (shared my validate_data function)
+2. Show me how to fix that (the Name and Tags alert message).
+3. How do I fix this line causing an error (the upload_form_display style attribute, which turned out to be a VS Code warning and not a real error).
+4. Tell me how to test the web app and what I should check for.
+5. Shared the Claude in Chrome test report and asked which failures were relevant (led to finding the missing adminlogin route).
+6. Will this fix it? (shared my updated application.py)
